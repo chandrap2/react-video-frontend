@@ -8,7 +8,7 @@ const user = (props) => {
         elem = (
             <div id="signed-in" className="nonclickable" style={{}}>
                 Signed in as
-                <img id="user-pic" style={{}}></img>
+                <img id="user-pic" style={{}} />
             </div>
         );
     } else {
@@ -17,7 +17,7 @@ const user = (props) => {
         );
     }
 
-    return elem;
+    return <div id="sign-in">{ elem }</div>;
 }
 
 export default user;
