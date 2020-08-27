@@ -1,67 +1,75 @@
 import React, { Component } from 'react';
 import User from "./User/User"
 import VideoCard from "./VideoCard/VideoCard"
+import { sendHttpGetReq } from "./util.js"
 import logo from './logo.svg';
 // import './App.css';
 
-const apiURL = "https://1poxidle5i.execute-api.us-west-2.amazonaws.com/production";
 class App extends Component {
   state = {
-    user: "null",
+    loginWindow: null,
+    user: null,
     accounts: null,
     timeline: null
-    // isSignedIn: false
   }
 
-  // componentDidMount() {
-  //   this.sendHttpGetReq("/verify")
-  //   .then(res => (Object.keys(res).length != 0) ?
-  //                 res : Promise.reject("Not signed in"))
-  //   .then(res => this.setState({ user: res }))
-  //   .catch(err => {
-  //     console.log(err);
+  openLoginWindow = url => {
+    let params = "menubar=no,toolbar=no,width=600,height=600";
+    this.setState({ loginWindow: window.open(url, "Login", params) });
+  }
+  
+  closeLoginWindow = () => this.state.loginWindow.close();
+
+  componentDidMount() {
+    sendHttpGetReq("/verify")
+    .then(res => (Object.keys(res).length != 0) ?
+          res : Promise.reject("Not signed in"))
+    .then(res => this.setState({ user: res }))
+    .catch(err => {
+      console.log(err);
       
-  //     this.waitForLogin()
-  //       .then(res => this.sendHttpGetReq("/verify"))
-  //       .then(res => this.setState({ user: res }))
-  //       .catch(console.error);
-  //   });
-  // }
+      this.waitForLogin()
+        .then(res => sendHttpGetReq("/verify"))
+        .then(res => this.setState({ user: res }))
+        .catch(console.error);
+    });
+  }
 
   render() {
     return (
       <div>
         <div id="title"> <h1>I want this video</h1> </div>
-        <User signedIn={this.state.user}/>
+        <User
+          user={this.state.user} 
+          loginWindowHandlers={
+            {open: this.openLoginWindow, 
+            close: this.closeLoginWindow}}
+        />
+        
         <VideoCard acc={{ name: "a", screen_name: "lol" }}/>
       </div>
     );
   }
 
-  // async sendHttpGetReq(endpoint) {
-  //   let response = await fetch(apiURL + endpoint, { credentials: "include" });
-  //   response = await response.json();
-  //   return response;
-  // }
+  waitForLogin() {
+    return new Promise(res => {
+      let checkCookie = setInterval(async () => {
+        // console.log("checking if cookies exist");
 
-  // waitForLogin() {
-  //   return new Promise(res => {
-  //     let checkCookie = setInterval(async () => {
-  //       // console.log("checking if cookies exist");
-
-  //       this.sendHttpGetReq("/is_logged_in")
-  //         .then(response => {
-  //           // console.log("cookie check:", response);
-  //           if (response.signedIn) {
-  //             // console.log("cookies found");
-  //             // auth_window.close();
-  //             clearInterval(checkCookie);
-  //             res();
-  //           }
-  //         });
-  //     }, 1000);
-  //   });
-  // }
+        sendHttpGetReq("/is_logged_in")
+          .then(response => {
+            // console.log("cookie check:", response);
+            if (response.signedIn) {
+              // console.log("cookies found");
+              // console.log(this.auth_window, typeof this.auth_window);
+              this.state.loginWindow.close();
+              clearInterval(checkCookie);
+              res();
+            }
+          });
+      }, 1000);
+    });
+  }
 
   // signedIn(user) {
   //   // console.log("signed in");

@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My HTML Page</title>
+  <style>
+    html {
+      padding: 10px 20px;
+      background-color: #ffffc9;
+    }
+
+    body {
+      margin: 0px;
+      padding: 5px;
+    }
+
+    body>* {
+      font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+      margin-bottom: 20px;
+    }
+
+    h3 {
+      color: #1780aa;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="root">
+    <h3>Redirecting...</h3>
+    <script>
+      
+      document.addEventListener("DOMContentLoaded", async () => {
+        let windowQuery = new URLSearchParams(window.location.search);
+        
+        let apiURL =
+          new URL("https://1poxidle5i.execute-api.us-west-2.amazonaws.com/production/redir");
+        apiURL.searchParams.set("oauth_token", windowQuery.get("oauth_token"));
+        apiURL.searchParams.set("oauth_verifier", windowQuery.get("oauth_verifier"));
+
+        let response = await fetch(apiURL, { credentials: "include" });
+        console.log("cookies:", document.cookie);
+      });
+    </script>
+  </div>
+</body>
+
+</html>
