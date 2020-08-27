@@ -4,3 +4,9 @@ export async function sendHttpGetReq(endpoint) {
     response = await response.json();
     return response;
 }
+
+export let signInStates = {
+    VERIFYING: "verifying",
+    SIGNED_IN: "signed in",
+    SIGNED_OUT: "signed out"
+};

@@ -1,5 +1,5 @@
 import React from 'react';
-import { sendHttpGetReq } from "../util.js"
+import { sendHttpGetReq,signInStates } from "../util.js"
 
 const user = (props) => {
     function signInHandler(signInWindow) {
@@ -13,7 +13,7 @@ const user = (props) => {
             url.searchParams.set("oauth_token", req_token.oauth_token);
             // console.log(url);
 
-            props.loginWindowHandlers.open(url);
+            props.signInWindowHandlers.open(url);
 
             // let params = "menubar=no,toolbar=no,width=600,height=600";
             // signInWindow = window.open(url, "test", params);
@@ -21,18 +21,18 @@ const user = (props) => {
     }
 
     let elem;
-    
-    // console.log(props.signedIn, typeof props.signedIn);
-    if (props.user) {
+    if (props.signInState == signInStates.VERIFYING) {
+        elem = <p className="nonclickable">Loading</p>;
+    } else if (props.signInState == signInStates.SIGNED_IN) {
         elem = (
             <div id="signed-in" className="nonclickable">
                 Signed in as
                 <img id="user-pic" src={props.user.profile_image_url_https} />
             </div>
         );
-    } else {
+    } else if (props.signInState == signInStates.SIGNED_OUT) {
         elem = (
-            <button id="login-btn" 
+            <button id="login-btn"
             className="big-button" 
             onClick={() => signInHandler(props.signInWindow)}>
                 Sign in
@@ -40,7 +40,7 @@ const user = (props) => {
         );
     }
 
-    return <div id="sign-in">{ elem }</div>;
+    return <div id="sign-in">{elem}</div>;
 }
 
 export default user;

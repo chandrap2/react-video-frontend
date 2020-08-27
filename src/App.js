@@ -1,36 +1,50 @@
 import React, { Component } from 'react';
 import User from "./User/User"
 import VideoCard from "./VideoCard/VideoCard"
-import { sendHttpGetReq } from "./util.js"
+import { sendHttpGetReq, signInStates } from "./util.js"
 import logo from './logo.svg';
 // import './App.css';
 
 class App extends Component {
   state = {
-    loginWindow: null,
+    signInState: signInStates.VERIFYING,
+    signInWindow: null,
     user: null,
     accounts: null,
     timeline: null
   }
 
-  openLoginWindow = url => {
+  openSignInWindow = url => {
     let params = "menubar=no,toolbar=no,width=600,height=600";
-    this.setState({ loginWindow: window.open(url, "Login", params) });
+    this.setState({ signInWindow: window.open(url, "SignIn", params) });
   }
   
-  closeLoginWindow = () => this.state.loginWindow.close();
+  closeSignInWindow = () => this.state.signInWindow.close();
 
   componentDidMount() {
     sendHttpGetReq("/verify")
     .then(res => (Object.keys(res).length != 0) ?
-          res : Promise.reject("Not signed in"))
-    .then(res => this.setState({ user: res }))
+            res : Promise.reject("Not signed in"))
+    .then(res => {
+        this.setState(
+          {
+            user: res,
+            signInState: signInStates.SIGNED_IN
+          })
+    })
     .catch(err => {
+      this.setState({ signInState: signInStates.SIGNED_OUT })
+
       console.log(err);
       
-      this.waitForLogin()
+      this.waitForSignIn()
         .then(res => sendHttpGetReq("/verify"))
-        .then(res => this.setState({ user: res }))
+        .then(res => this.setState(
+          {
+            user: res,
+            signInState: signInStates.SIGNED_IN
+          })
+        )
         .catch(console.error);
     });
   }
@@ -41,17 +55,17 @@ class App extends Component {
         <div id="title"> <h1>I want this video</h1> </div>
         <User
           user={this.state.user} 
-          loginWindowHandlers={
-            {open: this.openLoginWindow, 
-            close: this.closeLoginWindow}}
+          signInState={this.state.signInState} 
+          signInWindowHandlers={
+            {open: this.openSignInWindow, 
+            close: this.closeSignInWindow}}
         />
-        
         <VideoCard acc={{ name: "a", screen_name: "lol" }}/>
       </div>
     );
   }
 
-  waitForLogin() {
+  waitForSignIn() {
     return new Promise(res => {
       let checkCookie = setInterval(async () => {
         // console.log("checking if cookies exist");
@@ -62,7 +76,7 @@ class App extends Component {
             if (response.signedIn) {
               // console.log("cookies found");
               // console.log(this.auth_window, typeof this.auth_window);
-              this.state.loginWindow.close();
+              this.state.signInWindow.close();
               clearInterval(checkCookie);
               res();
             }
@@ -169,7 +183,7 @@ class App extends Component {
 //       <div id="title"> <h1>I want this video</h1> </div>
 
 //       <div id="sign-in">
-//         <div id="login-btn" class="big-button" style={{}}>Sign in</div>
+//         <div id="signIn-btn" class="big-button" style={{}}>Sign in</div>
 //         <div id="signed-in" class="nonclickable" style={{}}>
 //           Signed in as
 //         <img id="user-pic" style={{}}></img>
