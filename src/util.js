@@ -5,8 +5,22 @@ export async function sendHttpGetReq(endpoint) {
     return response;
 }
 
-export let signInStates = {
+export const signInStates = {
     VERIFYING: "verifying",
     SIGNED_IN: "signed in",
     SIGNED_OUT: "signed out"
 };
+
+export const dashboardStates = {
+    TL: "timeline",
+    ACCS: "accs"
+};
+
+
+export const tabToggleStyle = {
+    color: "#638897",
+    backgroundColor: "#ffffc9",
+    padding: "12px",
+    borderStyle: "solid",
+    cursor: "auto"
+}

@@ -1,7 +1,9 @@
 import React, { Component } from 'react';
-import User from "./User/User"
-import VideoCard from "./VideoCard/VideoCard"
-import { sendHttpGetReq, signInStates } from "./util.js"
+import User from "./components/User/User"
+import VideoCard from "./components/VideoCard/VideoCard"
+import Tabs from "./components/Tabs/Tabs"
+
+import { sendHttpGetReq, signInStates, dashboardStates} from "./util.js"
 import logo from './logo.svg';
 // import './App.css';
 
@@ -10,17 +12,38 @@ class App extends Component {
     signInState: signInStates.VERIFYING,
     signInWindow: null,
     user: null,
+    dashboardState: dashboardStates.TL,
     accounts: null,
-    timeline: null
   }
 
+  /**
+   * Handler to open a browser window with the specified url
+   * 
+   * @param {URL} url 
+   */
   openSignInWindow = url => {
     let params = "menubar=no,toolbar=no,width=600,height=600";
     this.setState({ signInWindow: window.open(url, "SignIn", params) });
   }
-  
+
+  /**
+   * Handler to close the login window
+   *
+   */
   closeSignInWindow = () => this.state.signInWindow.close();
 
+  /**
+   * Handler to toggle the dashboard state between Tl and ACCS
+   */
+  switchDashboard = () => {
+    (this.state.dashboardState === dashboardStates.TL) ?
+      this.setState({ dashboardState: dashboardStates.ACCS }) :
+      this.setState({ dashboardState: dashboardStates.TL })
+  }
+
+  /**
+   * Handles the login flow
+   */
   componentDidMount() {
     sendHttpGetReq("/verify")
     .then(res => (Object.keys(res).length != 0) ?
@@ -53,6 +76,7 @@ class App extends Component {
     return (
       <div>
         <div id="title"> <h1>I want this video</h1> </div>
+        
         <User
           user={this.state.user} 
           signInState={this.state.signInState} 
@@ -60,7 +84,11 @@ class App extends Component {
             {open: this.openSignInWindow, 
             close: this.closeSignInWindow}}
         />
-        <VideoCard acc={{ name: "a", screen_name: "lol" }}/>
+
+        <Tabs
+          dashboardState={this.state.dashboardState} 
+          switchHandler={this.switchDashboard}
+        />
       </div>
     );
   }
