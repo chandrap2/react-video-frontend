@@ -2,28 +2,29 @@ import React from 'react'
 
 const videocard = (props) => {
     return (
-        <div className="result">
-            <div className="acc_header">
-                {/* <img src={props.acc.pic}/> */}
-                <h2>{`${props.acc.name} (@${props.acc.screen_name})`}</h2>
-                {/* <div className="collapse manipulator" onClick={props.collapseHandler}></div> */}
-            </div>
-            <br/>
-            <div className="vid-container">
-                {/* {
-                    props.vids.map(vid => 
-                        <vid
-                        src={vid.url} 
-                        poster={vid.thumbnail} 
-                        preload="none" 
-                        width="200px" 
-                        height="200px" 
-                        controls></vid>
-                    )
-                } */}
-                Da vids
+        <div style={{ display: "block" }}>
+            <div className="result">
+                <div className="acc_header">
+                    <img src={props.user.profile_image_url_https}/>
+                    <h2>{`${props.user.name} (@${props.user.screen_name})`}</h2>
+                    {/* <div className="collapse manipulator" onClick={props.collapseHandler}></div> */}
+                </div>
+                <br/>
+                <div className="vid-container">
+                    {props.vids.map((vid, index) => {
+                        return <video 
+                                    src={vid.vid}
+                                    poster={vid.thumbnail}
+                                    width="200"
+                                    height="200"
+                                    key={index}
+                                    controls
+                                />
+                    })}
+                </div>
             </div>
         </div>
+
     );
 }
 

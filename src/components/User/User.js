@@ -1,32 +1,26 @@
 import React from 'react';
+import Loading from '../Loading/Loading';
+
 import { sendHttpGetReq, signInStates } from "../../util.js"
 
 const user = (props) => {
-    function signInHandler(signInWindow) {
+    function signInHandler() {
         sendHttpGetReq("/get_req_token")
         .then(res => {
-            console.log(signInWindow);
             let req_token = res;
-            // console.log(req_token);
 
             let url = new URL("https://api.twitter.com/oauth/authenticate");
             url.searchParams.set("oauth_token", req_token.oauth_token);
-            // console.log(url);
-
             props.signInWindowHandlers.open(url);
-
-            // let params = "menubar=no,toolbar=no,width=600,height=600";
-            // signInWindow = window.open(url, "test", params);
         });
     }
 
     let elem;
-    if (props.signInState == signInStates.VERIFYING) {
-        elem = <p className="nonclickable">Loading</p>;
-    } else if (props.signInState == signInStates.SIGNED_IN) {
+    if (props.signInState == signInStates.VERIFYING) elem = <Loading />;
+    else if (props.signInState == signInStates.SIGNED_IN) {
         elem = (
             <div id="signed-in" className="nonclickable">
-                Signed in as
+                Signed in as 
                 <img id="user-pic" src={props.user.profile_image_url_https} />
             </div>
         );
@@ -34,7 +28,7 @@ const user = (props) => {
         elem = (
             <button id="login-btn"
             className="big-button" 
-            onClick={() => signInHandler(props.signInWindow)}>
+            onClick={() => signInHandler()}>
                 Sign in
             </button>
         );

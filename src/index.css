@@ -11,7 +11,7 @@ body {
 
 body * { font-family: Raleway, sans-serif; }
 
-body > *, #accs > *, #timeline > * { margin-bottom: 15px; }
+#root > div > *, #accs > *, #timeline-results > * { margin-bottom: 15px; }
 
 #title {
 	display: inline-block;
@@ -70,10 +70,10 @@ body > *, #accs > *, #timeline > * { margin-bottom: 15px; }
 }
 
 .result {
-	max-width: 873px; /* each row contains 8 videos */
 	display: inline-block; /* to wrap video elements */
+	max-width: 873px; /* each row contains 8 videos */
 	padding: 7px;
-	margin-bottom: 15px;
+	/* margin-bottom: 15px; */
 	background-color: #a8e5ff;
 	border-radius: 10px;
 	color: #638897;
