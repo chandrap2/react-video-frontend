@@ -4,55 +4,37 @@ import Loading from '../Loading/Loading'
 
 import { sendHttpGetReq, getVids } from '../../util';
 
-class Timeline extends Component {
-    state = {
-        tweetsToggled: null
+export default class Timeline extends Component {
+    constructor(props) {
+        super(props);
+        
+        let toggles = [];
+
+        props.tweets.forEach(tweet => toggles.push(false));
+
+        this.state = { toggleState: toggles };
+    }
+
+    collapseHandler = i => {
+        let updated = [...this.state.toggleState];
+        console.log("current: ", updated);
+        updated[i] = !updated[i];
+        console.log("updated: ", updated);
+        // console.log(this.state.toggleState);
+        this.setState({ toggleState: updated });
     }
 
     render() {
         return (this.props.tweets) ?
-            this.props.tweets : <Loading />;
+            this.props.tweets.map(
+                (tweet, index) => (
+                    <VideoCard 
+                        key={index} 
+                        index={index} 
+                        user={tweet.user} 
+                        collapseHandler={this.collapseHandler}
+                        vids={this.state.toggleState[index] ? tweet.vids : null}
+                    />)
+            ) : <Loading />;
     }
 }
-
-// class Timeline extends Component {
-//     state = {
-//         timelineTweets: null
-//     }
-    
-//     componentDidMount() {
-//         if (!this.state.timelineTweets) {
-//             sendHttpGetReq("/get_timeline")
-//             .then(tweets => {
-//                 let vids = getVids(tweets);
-
-//                 let results = tweets.map((tweet, index) => {
-//                     return ( <VideoCard
-//                                 user={tweet.user}
-//                                 vids={[ vids[index] ]}
-//                                 key={index}
-//                             /> );
-//                 });
-
-//                 this.setState({ timelineTweets: results });
-//             });
-//         }
-//     }
-
-//     render() {
-//         if (this.state.timelineTweets) {
-//             return (
-//                 <div id="timeline-results">
-//                     {this.state.timelineTweets}
-//                 </div>
-//             );
-//         } else {
-//             return <p className="nonclickable">Loading</p>;
-//             // return <h1>a</h1>;
-//         }
-//         // return <h1>h1</h1>
-//     }
-// }
-
-// export default Timeline;
-export default Timeline;

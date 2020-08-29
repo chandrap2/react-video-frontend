@@ -64,9 +64,8 @@ class App extends Component {
           })
     })
     .catch(err => {
-      this.setState({ signInState: signInStates.SIGNED_OUT })
-
       console.log(err);
+      this.setState({ signInState: signInStates.SIGNED_OUT });
       
       this.waitForSignIn()
         .then(res => sendHttpGetReq("/verify"))
@@ -85,23 +84,16 @@ class App extends Component {
     if (this.state.signInState !== prevState.signInState &&
         this.state.signInState === signInStates.SIGNED_IN) {
       console.log("getting timeline");
-    
+      
       sendHttpGetReq("/get_timeline")
       .then(tweets => {
         let vids = getVids(tweets);
-        let vidsRendered = (
-          <div id="timeline-results">
-            {tweets.map((tweet, index) =>
-              (<VideoCard
-                user={tweet.user}
-                vids={[ vids[index] ]}
-                key={index}
-              />)
-            )}
-          </div>
-        );
-
-        this.setState({ timelineTweets: vidsRendered });
+        let results = tweets.map((tweet, index) =>  {
+          return { user: tweet.user, vids: [ vids[index] ] };
+        });
+        
+        this.setState({ timelineTweets: results });
+        console.log("received timeline");
       });
     }
   }
@@ -124,7 +116,9 @@ class App extends Component {
           switchHandler={this.switchDashboard}
         />
 
-        <Timeline tweets={this.state.timelineTweets}/>
+        {this.state.timelineTweets &&
+        this.state.dashboardState === dashboardStates.TL ? 
+          <Timeline tweets={this.state.timelineTweets} /> : null}
         
       </div>
     );
