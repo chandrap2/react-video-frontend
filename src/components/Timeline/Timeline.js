@@ -2,8 +2,6 @@ import React, { Component } from 'react';
 import VideoCard from '../VideoCard/VideoCard';
 import Loading from '../Loading/Loading'
 
-import { sendHttpGetReq, getVids } from '../../util';
-
 export default class Timeline extends Component {
     constructor(props) {
         super(props);
@@ -16,11 +14,8 @@ export default class Timeline extends Component {
     }
 
     collapseHandler = i => {
-        let updated = [...this.state.toggleState];
-        console.log("current: ", updated);
-        updated[i] = !updated[i];
-        console.log("updated: ", updated);
-        // console.log(this.state.toggleState);
+        let updated = this.state.toggleState.map(
+            (elem, index) => (index === i) ? !elem : false);
         this.setState({ toggleState: updated });
     }
 

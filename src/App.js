@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import User from "./components/User/User"
-import VideoCard from "./components/VideoCard/VideoCard"
 import Tabs from "./components/Tabs/Tabs"
 import Timeline from "./components/Timeline/Timeline"
 
@@ -20,8 +19,8 @@ class App extends Component {
     user: null,
     dashboardState: dashboardStates.TL,
 
+    timelineTweets: null,
     accounts: null,
-    timelineTweets: null
   }
 
   /**
@@ -49,53 +48,57 @@ class App extends Component {
       this.setState({ dashboardState: dashboardStates.TL })
   }
 
+  completeSignIn(user) {
+    this.setState(
+    {
+      user: user,
+      signInState: signInStates.SIGNED_IN
+    });
+
+    this.getTimeline();
+    this.getAccs();
+  }
+
+  /** GET TL TWEETS */
+  getTimeline() {
+    sendHttpGetReq("/get_timeline")
+    .then(tweets => {
+      let vids = getVids(tweets);
+      let results = tweets.map((tweet, index) => {
+        return { user: tweet.user, vids: [vids[index]] };
+      });
+
+      this.setState({ timelineTweets: results });
+      console.log("received timeline");
+    });
+  }
+
+  /** GET FOLLOWED ACCS */
+  getAccs() {
+    sendHttpGetReq("/get_accs")
+    .then(accs => {
+      this.setState({ accounts: accs });
+      console.log("received accs", this.state.accounts);
+    });
+  }
+
   /**
    * Handles the login flow
    */
   componentDidMount() {
+    /** SIGN-IN FLOW */
     sendHttpGetReq("/verify")
-    .then(res => (Object.keys(res).length != 0) ?
-            res : Promise.reject("Not signed in"))
-    .then(res => {
-        this.setState(
-          {
-            user: res,
-            signInState: signInStates.SIGNED_IN
-          })
-    })
+    .then(res => (Object.keys(res).length != 0) ? res : Promise.reject("Not signed in"))
+    .then(res => this.completeSignIn(res))
     .catch(err => {
       console.log(err);
       this.setState({ signInState: signInStates.SIGNED_OUT });
-      
-      this.waitForSignIn()
-        .then(res => sendHttpGetReq("/verify"))
-        .then(res => this.setState(
-          {
-            user: res,
-            signInState: signInStates.SIGNED_IN
-          })
-        )
-        .catch(console.error);
-    });
 
-  }
-  
-  componentDidUpdate(prevProps, prevState) {
-    if (this.state.signInState !== prevState.signInState &&
-        this.state.signInState === signInStates.SIGNED_IN) {
-      console.log("getting timeline");
-      
-      sendHttpGetReq("/get_timeline")
-      .then(tweets => {
-        let vids = getVids(tweets);
-        let results = tweets.map((tweet, index) =>  {
-          return { user: tweet.user, vids: [ vids[index] ] };
-        });
-        
-        this.setState({ timelineTweets: results });
-        console.log("received timeline");
-      });
-    }
+      this.waitForSignIn()
+      .then(res => sendHttpGetReq("/verify"))
+      .then(res => this.completeSignIn(res))
+      .catch(console.error);
+    });
   }
   
   render() {
@@ -139,6 +142,7 @@ class App extends Component {
       }, 1000);
     });
   }
+  
 }
 
 export default App;
