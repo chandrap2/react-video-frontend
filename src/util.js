@@ -6,6 +6,16 @@ export async function sendHttpGetReq(endpoint) {
     return response;
 }
 
+const pic_url_mod = 7; // "_normal".length;
+export function getLargerProfPic(url) {
+    let format;
+    if (url[url.length - 4] === ".") format = url.substring(url.length - 4);
+    else format = url.substring(url.length - 5);
+
+    url = url.substring(0, url.length - pic_url_mod - format.length) + "_bigger" + format;
+    return url;
+}
+
 export function getVids(tweets) {
     let vids = [];
 
@@ -43,6 +53,11 @@ export const dashboardStates = {
     ACCS: "accs"
 };
 
+export const accVidFetchStates = {
+    NOT_FETCHED: "not fetched",
+    FETCHING: "fetching",
+    FETCHED: "fetched",
+}
 
 export const tabToggleStyle = {
     color: "#638897",

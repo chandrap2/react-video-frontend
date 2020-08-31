@@ -2,10 +2,12 @@ import React, { Component } from 'react';
 import User from "./components/User/User"
 import Tabs from "./components/Tabs/Tabs"
 import Timeline from "./components/Timeline/Timeline"
+import Accounts from "./components/Accounts/Accounts"
 
 import { sendHttpGetReq,
           signInStates,
           dashboardStates,
+          accVidFetchStates,
           getVids
         } from "./util.js"
 
@@ -21,6 +23,9 @@ class App extends Component {
 
     timelineTweets: null,
     accounts: null,
+
+    accVids: null,
+    accVidsLoaded: accVidFetchStates.NOT_FETCHED,
   }
 
   /**
@@ -48,6 +53,45 @@ class App extends Component {
       this.setState({ dashboardState: dashboardStates.TL })
   }
 
+  getAccVids = () => {
+    let accLimit = Math.min(200, this.state.accounts.length);
+    // let j = 0;
+    let buffer = [];
+    this.setState({ accVidsLoaded: accVidFetchStates.FETCHING });
+
+    for (let i = 0; i < accLimit; i++) {
+      sendHttpGetReq
+      (`/get_vids?acc_name=${this.state.accounts[i].screen_name}&id=${i}`)
+      .then(tweets => {
+        if (this.state.accVids.length == 0) {
+          this.setState({accVids: []});
+        }
+        // j++;
+
+        let acc = this.state.accounts[i];
+        let vids = getVids(tweets.vids);
+        
+        if (vids.length > 0) {
+          let obj = {acc: acc, vids: vids};
+          buffer.push(obj);
+  
+          if (buffer.length == 8 && this.state.accVids.length == 0) {
+            this.setState({ accVids: buffer });
+            buffer = [];
+          }
+        }
+
+        if (i == accLimit) {
+          this.setState({
+            accVids: this.state.accVids.concat(buffer),
+            accVidsLoaded: accVidFetchStates.FETCHED
+          });
+          console.log("received all acc vids");
+        }
+      });
+    }
+  }
+
   completeSignIn(user) {
     this.setState(
     {
@@ -65,11 +109,11 @@ class App extends Component {
     .then(tweets => {
       let vids = getVids(tweets);
       let results = tweets.map((tweet, index) => {
-        return { user: tweet.user, vids: [vids[index]] };
+        return { acc: tweet.user, vids: [vids[index]] };
       });
 
       this.setState({ timelineTweets: results });
-      console.log("received timeline");
+      console.log("received timeline", results.length);
     });
   }
 
@@ -119,9 +163,13 @@ class App extends Component {
           switchHandler={this.switchDashboard}
         />
 
-        {this.state.timelineTweets &&
-        this.state.dashboardState === dashboardStates.TL ? 
+        {this.state.dashboardState === dashboardStates.TL ?
           <Timeline tweets={this.state.timelineTweets} /> : null}
+
+        {/* <Accounts
+          accVidsLoaded={this.state.accVidsLoaded}
+          accVids={this.state.accVids}
+          retrieveHandler={this.getAccVids} /> */}
         
       </div>
     );

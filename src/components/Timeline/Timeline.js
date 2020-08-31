@@ -5,18 +5,21 @@ import Loading from '../Loading/Loading'
 export default class Timeline extends Component {
     constructor(props) {
         super(props);
-        
-        let toggles = [];
-
-        props.tweets.forEach(tweet => toggles.push(false));
-
-        this.state = { toggleState: toggles };
+        this.state = { toggleState: [] };
+        // console.log("timeline length", toggles.length);
     }
 
     collapseHandler = i => {
         let updated = this.state.toggleState.map(
             (elem, index) => (index === i) ? !elem : false);
         this.setState({ toggleState: updated });
+    }
+
+    componentDidUpdate(prevProps, prevState) {
+        if (this.props.tweets && !prevProps.tweets) {
+            let toggles = this.props.tweets.map(tweet => false);
+            this.setState({ toggleState: toggles });
+        }
     }
 
     render() {
@@ -26,9 +29,9 @@ export default class Timeline extends Component {
                     <VideoCard 
                         key={index} 
                         index={index} 
-                        user={tweet.user} 
+                        vidsObj={tweet} 
                         collapseHandler={this.collapseHandler}
-                        vids={this.state.toggleState[index] ? tweet.vids : null}
+                        isToggled={this.state.toggleState[index]}
                     />)
             ) : <Loading />;
     }

@@ -1,10 +1,12 @@
 import React from 'react'
 import CollapseBtn from '../CollapseBtn/CollapseBtn'
 
+import { getLargerProfPic } from "../../util"
+
 const videocard = props => {
     let vidsRendered = null;
-    if (props.vids) {
-        vidsRendered = props.vids.map((vid, index) => {
+    if (props.isToggled) {
+        vidsRendered = props.vidsObj.vids.map((vid, index) => {
             return <video
                 src={vid.vid}
                 poster={vid.thumbnail}
@@ -20,8 +22,10 @@ const videocard = props => {
         <div style={{ display: "block" }}>
             <div className="result">
                 <div className="acc_header">
-                    <img src={props.user.profile_image_url_https}/>
-                    <h2>{`${props.user.name} (@${props.user.screen_name})`}</h2>
+                    <img src={
+                        getLargerProfPic(props.vidsObj.acc.profile_image_url_https)
+                    }/>
+                    <h2>{`${props.vidsObj.acc.name} (@${props.vidsObj.acc.screen_name})`}</h2>
                     <CollapseBtn handler={() => props.collapseHandler(props.index)} />
                 </div>
                 <br/>
