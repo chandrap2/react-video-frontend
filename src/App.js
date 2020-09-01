@@ -54,7 +54,7 @@ class App extends Component {
   }
 
   getAccVids = () => {
-    let accLimit = Math.min(50, this.state.accounts.length);
+    let accLimit = Math.min(200, this.state.accounts.length);
 
     let j = 0;
     let buffer = [];

@@ -8,16 +8,16 @@ const videocard = props => {
     if (props.isToggled) {
         vidsRendered = props.vidsObj.vids.map((vid, index) => {
             return <video
-                src={vid.vid}
-                poster={vid.thumbnail}
-                width="200"
-                height="200"
-                key={index}
-                controls
+            src={vid.vid}
+            poster={vid.thumbnail}
+            width="200"
+            height="200"
+            key={index}
+            controls
             />;
         });
     }
-
+    
     return (
         <div style={{ display: "block" }}>
             <div className="result">
@@ -29,6 +29,9 @@ const videocard = props => {
                     <CollapseBtn handler={() => props.collapseHandler(props.index)} />
                 </div>
                 <br/>
+                {/* <div className="vid-container"
+                    style={{ display : (props.isToggled ? "" : "none") }}
+                >{vidsRendered}</div> */}
                 <div className="vid-container">{vidsRendered}</div>
             </div>
         </div>
