@@ -22,9 +22,7 @@ const videocard = props => {
         <div style={{ display: "block" }}>
             <div className="result">
                 <div className="acc_header">
-                    <img src={
-                        getLargerProfPic(props.vidsObj.acc.profile_image_url_https)
-                    }/>
+                    <img src={props.vidsObj.acc.profile_image_url_https}/>
                     <h2>{`${props.vidsObj.acc.name} (@${props.vidsObj.acc.screen_name})`}</h2>
                     <CollapseBtn handler={() => props.collapseHandler(props.index)} />
                 </div>

@@ -23,9 +23,8 @@ const user = (props) => {
         elem = (
             <div id="signed-in" className="nonclickable">
                 Signed in as 
-                <img id="user-pic" src={
-                    getLargerProfPic(props.user.profile_image_url_https)
-                } />
+                <img id="user-pic"
+                    src={props.user.profile_image_url_https}/>
             </div>
         );
     } else if (props.signInState == signInStates.SIGNED_OUT) {

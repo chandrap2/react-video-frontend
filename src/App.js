@@ -8,7 +8,8 @@ import { sendHttpGetReq,
           signInStates,
           dashboardStates,
           accVidFetchStates,
-          getVids
+          getVids,
+          getLargerProfPic
         } from "./util.js"
 
 import logo from './logo.svg';
@@ -100,6 +101,9 @@ class App extends Component {
   }
 
   completeSignIn(user) {
+    user.profile_image_url_https = 
+      getLargerProfPic(user.profile_image_url_https);
+    
     this.setState(
     {
       user: user,
@@ -116,6 +120,8 @@ class App extends Component {
     .then(tweets => {
       let vids = getVids(tweets);
       let results = tweets.map((tweet, index) => {
+        tweet.user.profile_image_url_https = 
+          getLargerProfPic(tweet.user.profile_image_url_https);
         return { acc: tweet.user, vids: [vids[index]] };
       });
 
@@ -128,7 +134,13 @@ class App extends Component {
   getAccs() {
     sendHttpGetReq("/get_accs")
     .then(accs => {
-      this.setState({ accounts: accs, accVidsLoaded: accVidFetchStates.NOT_FETCHED });
+      let updated = accs.map(acc => {
+        acc.profile_image_url_https =
+          getLargerProfPic(acc.profile_image_url_https);
+        
+        return acc;
+      })
+      this.setState({ accounts: updated, accVidsLoaded: accVidFetchStates.NOT_FETCHED });
       console.log("received accs", this.state.accounts);
     });
   }
