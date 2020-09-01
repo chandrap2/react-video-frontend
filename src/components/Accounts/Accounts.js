@@ -1,34 +1,36 @@
 import React, { Component } from 'react'
 import VideoCard from "../VideoCard/VideoCard"
+import Loading from "../Loading/Loading"
 
 import { accVidFetchStates } from "../../util"
 
 class Accounts extends Component {
     constructor(props) {
         super(props);
-
         this.state = {toggleState: null, currPage: 0, maxPage: 0 };
     }
 
     incrementPage = () => {
-        if (this.state.currPage + 1 > this.state.maxPage) {
-            this.setState({ currPage: 0 });
-        } else {
-            this.setState({ currPage: this.state.currPage + 1 });
-        }
+        this.setState({
+            currPage: (this.state.currPage + 1 > this.state.maxPage) ?
+            0 : this.state.currPage + 1
+        });
+        console.log("currpage:", this.state.currPage, 
+            "maxpage:", this.state.maxPage, );
         
-        let toggles = [false, false, false, false, false, false, false, false];
+        let toggles = [false, false, false, false, false, false, false];
         this.setState({ toggleState: toggles });
     }
     
     derementPage = () => {
-        if (this.state.currPage - 1 < 0) {
-            this.setState({ currPage: this.state.maxPage });
-        } else {
-            this.setState({ currPage: this.state.currPage - 1 });
-        }
+        this.setState({
+            currPage: (this.state.currPage - 1 < 0) ?
+                    this.state.maxPage : this.state.currPage - 1
+        });
+        console.log("currpage:", this.state.currPage,
+            "maxpage:", this.state.maxPage);
 
-        let toggles = [false, false, false, false, false, false, false, false];
+        let toggles = [false, false, false, false, false, false, false];
         this.setState({ toggleState: toggles });
     }
 
@@ -38,59 +40,65 @@ class Accounts extends Component {
         this.setState({ toggleState: updated });
     }
 
-    // componentDidUpdate(prevProps, prevState) {
-    //     if (!this.props.accVidsLoaded &&
-    //         this.props.accVids) {
+    componentDidUpdate(prevProps, prevState) {
+        console.log("prevprops", prevProps.accVidsLoaded);
+        console.log("currprops", this.props.accVidsLoaded);
+        console.log("-------------------");
 
-    //         this.setState({ accVidsLoaded: true });
+        if (!this.state.toggleState &&
+            this.props.accVids &&
+            this.props.accVids.length == 7) {
             
-    //         let toggles = [false, false, false, false, false, false, false, false];
-    //         this.setState({ toggleState: toggles })
-    //     }
+            console.log("[accounts.js] first 8 loaded");
+            let toggles = [false, false, false, false, false, false, false, false];
+            this.setState({ toggleState: toggles });
+        }
         
-    //     if (!this.prevProps.accVidsLoaded &&
-    //         this.props.accVidsLoaded) {
+        if ((prevProps.accVidsLoaded == accVidFetchStates.NOT_FETCHED ||
+            prevProps.accVidsLoaded == accVidFetchStates.FETCHING) &&
+            this.props.accVidsLoaded == accVidFetchStates.FETCHED) {
+                console.log("[accounts.js] everything loaded");
 
-    //         let len = this.props.accVids.length;
-    //         let maxPage = (len - len % 8) / 8;
-    //         this.setState({ maxPage: maxpage });
-    //     }
-    // }
+                let len = this.props.accVids.length;
+                let maxPage = (len - len % 7) / 7;
+                this.setState({ maxPage: maxPage });
+        }
+    }
     
     render() {
-        let accsRendered = null;
+        let input = (this.props.accVidsLoaded == accVidFetchStates.LOADING_ACCS ||
+                    this.props.accVidsLoaded == accVidFetchStates.FETCHING) ?
+            <Loading/> :
+            (<button id="retrieve"
+            className="big-button"
+            onClick={this.props.retrieveHandler}>Retrieve videos</button>);
+
+        let flipper = (this.props.accVidsLoaded == accVidFetchStates.FETCHED) ?
+            (<div id="flip-page">
+                <button className="flip manipulator" onClick={this.derementPage} id="left" />
+                <button className="flip manipulator" onClick={this.incrementPage} id="right" />
+            </div>) : null;
         
-        if (this.props.accVidsLoaded == 
-            (accVidFetchStates.FETCHING ||
-            accVidFetchStates.FETCHED)) {
-            accsRendered = this.props.accVids.slice(
-                this.state.currPage * 8, (this.state.currPage * 8) + 8
+        let accsRendered = (
+            this.props.accVids && this.props.accVids.length > 0) ? 
+
+            this.props.accVids.slice(
+                this.state.currPage * 7, (this.state.currPage * 7) + 7
             ).map((vidsObj, index) =>
                 <VideoCard
                     key={index}
                     index={index}
                     vidsObj={vidsObj}
                     collapseHandler={this.collapseHandler}
-                    isToggled={this.state.toggleState[index]}
+                    isToggled={this.state.toggleState ? 
+                        this.state.toggleState[index] : false}
                 />
-            );
-        }
+            ) : null;
 
         return (
             <div id="accs">
-                <div id="input">
-                    {/* <p id="loading-accs" class="nonclickable">Loading</p>
-                    <p id="no-accs" class="nonclickable">No accounts found</p> */}
-                    <button id="retrieve"
-                            class="big-button"
-                            onClick={this.props.retrieveHandler}>Retrieve videos</button>
-                </div>
-
-                <div id="flip-page">
-                    <button class="flip manipulator" onClick={this.derementPage} id="left"/>
-                    <button class="flip manipulator" onClick={this.incrementPage} id="right"/>
-                </div>
-
+                <div id="input">{input}</div>
+                {flipper}
                 <div id="results">{accsRendered}</div>
             </div>
         );

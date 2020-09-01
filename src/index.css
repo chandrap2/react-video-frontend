@@ -11,7 +11,11 @@ body {
 
 body * { font-family: Raleway, sans-serif; }
 
-#root > div > *, #accs > *, #timeline-results > * { margin-bottom: 15px; }
+#root > div > *,
+#accs > *,
+#accs > #results > *,
+#timeline-results > * { margin-bottom: 15px; }
+/* #results > * { margin-bottom: 15px; } */
 
 #title {
 	display: inline-block;

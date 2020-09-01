@@ -25,7 +25,7 @@ class App extends Component {
     accounts: null,
 
     accVids: null,
-    accVidsLoaded: accVidFetchStates.NOT_FETCHED,
+    accVidsLoaded: accVidFetchStates.LOADING_ACCS,
   }
 
   /**
@@ -54,8 +54,9 @@ class App extends Component {
   }
 
   getAccVids = () => {
-    let accLimit = Math.min(200, this.state.accounts.length);
-    // let j = 0;
+    let accLimit = Math.min(50, this.state.accounts.length);
+
+    let j = 0;
     let buffer = [];
     this.setState({ accVidsLoaded: accVidFetchStates.FETCHING });
 
@@ -63,10 +64,13 @@ class App extends Component {
       sendHttpGetReq
       (`/get_vids?acc_name=${this.state.accounts[i].screen_name}&id=${i}`)
       .then(tweets => {
-        if (this.state.accVids.length == 0) {
-          this.setState({accVids: []});
+        j++;
+        // console.log("getvids", j);
+
+        if (!this.state.accVids) {
+          console.log("set accVids");
+          this.setState({ accVids: [] });
         }
-        // j++;
 
         let acc = this.state.accounts[i];
         let vids = getVids(tweets.vids);
@@ -75,18 +79,21 @@ class App extends Component {
           let obj = {acc: acc, vids: vids};
           buffer.push(obj);
   
-          if (buffer.length == 8 && this.state.accVids.length == 0) {
+          if (buffer.length == 7 && this.state.accVids.length == 0) {
+            // console.log("first 8 loaded");
             this.setState({ accVids: buffer });
+            // console.log(this.state.accVids);
             buffer = [];
           }
         }
 
-        if (i == accLimit) {
+        if (j == accLimit) {
           this.setState({
             accVids: this.state.accVids.concat(buffer),
             accVidsLoaded: accVidFetchStates.FETCHED
           });
           console.log("received all acc vids");
+          console.log(this.state.accVids);
         }
       });
     }
@@ -121,7 +128,7 @@ class App extends Component {
   getAccs() {
     sendHttpGetReq("/get_accs")
     .then(accs => {
-      this.setState({ accounts: accs });
+      this.setState({ accounts: accs, accVidsLoaded: accVidFetchStates.NOT_FETCHED });
       console.log("received accs", this.state.accounts);
     });
   }
@@ -163,13 +170,15 @@ class App extends Component {
           switchHandler={this.switchDashboard}
         />
 
-        {this.state.dashboardState === dashboardStates.TL ?
-          <Timeline tweets={this.state.timelineTweets} /> : null}
+        {/* {this.state.dashboardState === dashboardStates.TL ?
+          <Timeline tweets={this.state.timelineTweets} /> : null} */}
 
-        {/* <Accounts
-          accVidsLoaded={this.state.accVidsLoaded}
-          accVids={this.state.accVids}
-          retrieveHandler={this.getAccVids} /> */}
+        {this.state.dashboardState === dashboardStates.TL ?
+          <Timeline tweets={this.state.timelineTweets} /> : 
+          <Accounts
+            accVidsLoaded={this.state.accVidsLoaded}
+            accVids={this.state.accVids}
+            retrieveHandler={this.getAccVids} />}
         
       </div>
     );

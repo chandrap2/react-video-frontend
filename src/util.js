@@ -54,6 +54,7 @@ export const dashboardStates = {
 };
 
 export const accVidFetchStates = {
+    LOADING_ACCS: "loading accs",
     NOT_FETCHED: "not fetched",
     FETCHING: "fetching",
     FETCHED: "fetched",

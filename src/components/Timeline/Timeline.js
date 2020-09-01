@@ -23,16 +23,18 @@ export default class Timeline extends Component {
     }
 
     render() {
-        return (this.props.tweets) ?
-            this.props.tweets.map(
-                (tweet, index) => (
-                    <VideoCard 
-                        key={index} 
-                        index={index} 
-                        vidsObj={tweet} 
-                        collapseHandler={this.collapseHandler}
-                        isToggled={this.state.toggleState[index]}
-                    />)
-            ) : <Loading />;
+        return <div id="timeline-results">
+            {(this.props.tweets) ?
+                this.props.tweets.map(
+                    (tweet, index) => (
+                        <VideoCard 
+                            key={index} 
+                            index={index} 
+                            vidsObj={tweet} 
+                            collapseHandler={this.collapseHandler}
+                            isToggled={this.state.toggleState[index]}
+                            />)
+                    ) : <Loading />}
+        </div>;
     }
 }
