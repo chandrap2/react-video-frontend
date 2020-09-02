@@ -5,10 +5,10 @@ import Loading from "../Loading/Loading"
 import { accVidFetchStates } from "../../util"
 
 class Accounts extends Component {
-    constructor(props) {
-        super(props);
-        // this.state = {toggleState: null, currPage: 0, maxPage: 0 };
-        this.state = {toggleState: null, currPage: 0, pages: 1 };
+    state = {
+        toggleState: null,
+        currPage: 0,
+        pages: 1,
     }
 
     incrementPage = () => {
@@ -16,8 +16,6 @@ class Accounts extends Component {
             currPage: (this.state.currPage + 1 == this.state.pages) ?
             0 : this.state.currPage + 1
         });
-        // console.log("currpage:", this.state.currPage, 
-        //     "maxpage:", this.state.maxPage, );
         
         let toggles = [false, false, false, false, false, false, false];
         this.setState({ toggleState: toggles });
@@ -28,8 +26,6 @@ class Accounts extends Component {
             currPage: (this.state.currPage - 1 < 0) ?
                     this.state.pages - 1 : this.state.currPage - 1
         });
-        // console.log("currpage:", this.state.currPage,
-        //     "maxpage:", this.state.maxPage);
 
         let toggles = [false, false, false, false, false, false, false];
         this.setState({ toggleState: toggles });
@@ -61,9 +57,8 @@ class Accounts extends Component {
                 console.log("[accounts.js] everything loaded");
 
                 let len = this.props.accVids.length;
-                let pages = (len % 7 == 0) ? len / 7 : Math.round(len / 7) + 1; 
-                // (len - len % 7) / 7;
-                // this.setState({ maxPage: maxPage });
+                let pages = (len % 7 == 0) ?
+                    len / 7 : Math.floor(len / 7) + 1;
                 this.setState({ pages: pages });
         }
     }
