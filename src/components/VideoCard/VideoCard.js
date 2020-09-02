@@ -23,7 +23,11 @@ const videocard = props => {
             <div className="result">
                 <div className="acc_header">
                     <img src={props.vidsObj.acc.profile_image_url_https}/>
-                    <h2>{`${props.vidsObj.acc.name} (@${props.vidsObj.acc.screen_name})`}</h2>
+                    <h2>{props.vidsObj.acc.name}
+                        <a href={`https://twitter.com/${props.vidsObj.acc.screen_name}`}>
+                            (@${props.vidsObj.acc.screen_name}
+                        </a>
+                    </h2>
                     <CollapseBtn handler={() => props.collapseHandler(props.index)} />
                 </div>
                 <br/>
