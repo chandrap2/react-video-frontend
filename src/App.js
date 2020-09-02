@@ -12,9 +12,6 @@ import { sendHttpGetReq,
           getLargerProfPic
         } from "./util.js"
 
-import logo from './logo.svg';
-// import './App.css';
-
 class App extends Component {
   state = {
     signInState: signInStates.VERIFYING,
@@ -165,6 +162,16 @@ class App extends Component {
   }
   
   render() {
+    let mainContent =
+      (this.state.signInState === signInStates.SIGNED_IN) ? (
+          (this.state.dashboardState === dashboardStates.TL) ?
+            <Timeline tweets={this.state.timelineTweets} /> :
+            <Accounts
+              accVidsLoaded={this.state.accVidsLoaded}
+              accVids={this.state.accVids}
+              retrieveHandler={this.getAccVids} />
+      ) : null;
+
     return (
       <div>
         <div id="title"> <h1>I want this video</h1> </div>
@@ -176,24 +183,14 @@ class App extends Component {
             {open: this.openSignInWindow, 
             close: this.closeSignInWindow}}
         />
-
+        
         <Tabs
           dashboardState={this.state.dashboardState} 
           switchHandler={this.switchDashboard}
         />
-
-        {/* {this.state.dashboardState === dashboardStates.TL ?
-          <Timeline tweets={this.state.timelineTweets} /> : null} */}
-
-        {this.state.dashboardState === dashboardStates.TL ?
-          <Timeline tweets={this.state.timelineTweets} /> : 
-          <Accounts
-            accVidsLoaded={this.state.accVidsLoaded}
-            accVids={this.state.accVids}
-            retrieveHandler={this.getAccVids} />}
         
-      </div>
-    );
+        {mainContent}
+      </div>);
   }
 
   waitForSignIn() {
