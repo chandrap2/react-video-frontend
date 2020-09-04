@@ -17,7 +17,8 @@ class App extends Component {
     signInState: signInStates.VERIFYING,
     signInWindow: null,
     user: null,
-    dashboardState: dashboardStates.TL,
+    // dashboardState: dashboardStates.TL,
+    dashboardState: dashboardStates.ACCS,
 
     timelineTweets: null,
     accounts: null,
@@ -56,19 +57,18 @@ class App extends Component {
 
     let j = 0;
     let buffer = [];
-    this.setState({ accVidsLoaded: accVidFetchStates.FETCHING });
+    this.setState(
+      {
+        accVids: [],
+        accVidsLoaded: accVidFetchStates.FETCHING
+      }
+    );
 
     for (let i = 0; i < accLimit; i++) {
       sendHttpGetReq
       (`/get_vids?acc_name=${this.state.accounts[i].screen_name}&id=${i}`)
       .then(tweets => {
         j++;
-        // console.log("getvids", j);
-
-        if (!this.state.accVids) {
-          console.log("set accVids");
-          this.setState({ accVids: [] });
-        }
 
         let acc = this.state.accounts[i];
         let vids = getVids(tweets.vids);
@@ -90,8 +90,8 @@ class App extends Component {
             accVids: this.state.accVids.concat(buffer),
             accVidsLoaded: accVidFetchStates.FETCHED
           });
-          console.log("received all acc vids");
-          console.log(this.state.accVids);
+          console.log("received all acc vids", this.state.accVids);
+          // console.log(this.state.accVids);
         }
       });
     }
@@ -107,24 +107,26 @@ class App extends Component {
       signInState: signInStates.SIGNED_IN
     });
 
-    this.getTimeline();
+    // this.getTimeline();
     this.getAccs();
   }
 
   /** GET TL TWEETS */
-  getTimeline() {
-    sendHttpGetReq("/get_timeline")
-    .then(tweets => {
-      let vids = getVids(tweets);
-      let results = tweets.map((tweet, index) => {
-        tweet.user.profile_image_url_https = 
-          getLargerProfPic(tweet.user.profile_image_url_https);
-        return { acc: tweet.user, vids: [vids[index]] };
+  getTimeline = () => {
+    if (!this.state.timelineTweets) {
+      sendHttpGetReq("/get_timeline")
+      .then(tweets => {
+        let vids = getVids(tweets);
+        let results = tweets.map((tweet, index) => {
+          tweet.user.profile_image_url_https = 
+            getLargerProfPic(tweet.user.profile_image_url_https);
+          return { acc: tweet.user, vids: [vids[index]] };
+        });
+  
+        console.log("received timeline", results.length);
+        this.setState({ timelineTweets: results });
       });
-
-      this.setState({ timelineTweets: results });
-      console.log("received timeline", results.length);
-    });
+    }
   }
 
   /** GET FOLLOWED ACCS */
@@ -162,15 +164,17 @@ class App extends Component {
   }
   
   render() {
-    let mainContent =
-      (this.state.signInState === signInStates.SIGNED_IN) ? (
-          (this.state.dashboardState === dashboardStates.TL) ?
-            <Timeline tweets={this.state.timelineTweets} /> :
-            <Accounts
-              accVidsLoaded={this.state.accVidsLoaded}
-              accVids={this.state.accVids}
-              retrieveHandler={this.getAccVids} />
-      ) : null;
+    let mainContent = null;
+    if (this.state.signInState === signInStates.SIGNED_IN) {
+      mainContent = (this.state.dashboardState === dashboardStates.TL) ?
+        <Timeline
+          tweets={this.state.timelineTweets}
+          timelineHandler={this.getTimeline} /> :
+        <Accounts
+          accVidsLoaded={this.state.accVidsLoaded}
+          accVids={this.state.accVids}
+          retrieveHandler={this.getAccVids} />;
+    }
 
     return (
       <div>

@@ -17,6 +17,49 @@ body * { font-family: Raleway, sans-serif; }
 #timeline-results > * { margin-bottom: 15px; }
 /* #results > * { margin-bottom: 15px; } */
 
+.big-button, .manipulator, .nonclickable { display: inline-block; }
+
+.big-button, .nonclickable {
+  	color: #638897;
+	margin: 0px;
+	font-size: 20px;
+	font-weight: bold;
+	border-radius: 10px;
+}
+
+.big-button:hover, .manipulator:hover {	cursor: pointer; }
+
+.big-button {
+	background-color: #a8e5ff;
+	padding: 17px 19px;
+}
+
+.big-button:hover {
+	background-color: #3391b9;
+	color: #174153;
+}
+
+.manipulator {
+	background-color: #638897;
+	color: #ffffc9;
+	font-weight: bold;
+	text-align: center;
+  	border-radius: 7px;
+}
+.manipulator:hover { background-color: #174153; }
+.manipulator svg {
+	height: 100%;
+	fill: #ffffc9;
+}
+
+.nonclickable {
+	padding: 14px 16px;
+	font-size: 20px;
+	font-weight: bold;
+	border-style: solid;
+	border-width: 3px;
+}
+
 #title {
 	display: inline-block;
 	margin-bottom: 13px;
@@ -64,10 +107,16 @@ body * { font-family: Raleway, sans-serif; }
 #no-accs { color: rgb(163, 45, 45); }
 
 #flip-page {
-	display: inline-block;
+	display: flex;
+	align-items: center;
 	padding: 0px;
-	margin-bottom: 12px;
 }
+
+#flip-page span {
+	color: #638897;
+	font-weight: 700;
+}
+
 .flip {
 	width: 60px;
 	height: 40px;
@@ -106,6 +155,14 @@ body * { font-family: Raleway, sans-serif; }
 	height: 40px;
 }
 
+.collapse svg {
+	position: relative;
+	top: 2px;
+	
+	height: 60%;
+	fill: #a8e5ff;
+}
+
 .vid-container {
 	max-height: 220px;
 	overflow: hidden scroll;
@@ -122,45 +179,6 @@ video {
 }
 
 video:fullscreen { object-fit: contain; }
-
-.big-button, .manipulator, .nonclickable { display: inline-block; }
-
-.big-button, .nonclickable {
-  	color: #638897;
-	margin: 0px;
-	font-size: 20px;
-	font-weight: bold;
-	border-radius: 10px;
-}
-
-.big-button:hover, .manipulator:hover {	cursor: pointer; }
-
-.big-button {
-	background-color: #a8e5ff;
-	padding: 17px 19px;
-}
-
-.big-button:hover {
-	background-color: #3391b9;
-	color: #174153;
-}
-
-.manipulator {
-	background-color: #638897;
-	color: #ffffc9;
-	font-weight: bold;
-	text-align: center;
-  	border-radius: 7px;
-}
-.manipulator:hover { background-color: #174153; }
-
-.nonclickable {
-	padding: 14px 16px;
-	font-size: 20px;
-	font-weight: bold;
-	border-style: solid;
-	border-width: 3px;
-}
 
 #tabs {
 	display: flex;
@@ -200,3 +218,15 @@ button {
 button:focus {
 	outline: none;
 }
+
+a:link {
+	color: #308fb4;
+}
+
+a:visited {
+	color: #277492;
+}
+
+/* .arrow {
+	fill: white;
+} */
